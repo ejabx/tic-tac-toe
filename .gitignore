@@ -1,0 +1,52 @@
+# ---- .NET (.NET 6/7/8) ----
+bin/
+obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+.vscode/
+*.log
+
+# Auto-generated files
+Generated_Code/
+
+# Visual Studio Code
+.vscode/
+
+# Rider
+.idea/
+
+# ASP.NET Secrets
+secrets.json
+
+# User-specific files
+*.swp
+*.sln.iml
+
+# ---- Node.js / React (frontend) ----
+frontend/node_modules/
+frontend/dist/
+frontend/.env
+frontend/.turbo/
+frontend/.next/
+frontend/.parcel-cache/
+frontend/.DS_Store
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+
+# ---- Logs ----
+*.log
+logs/
+*.tsbuildinfo
+
+# ---- OS Files ----
+.DS_Store
+Thumbs.db
+
+# ---- Docker ----
+*.pid
+*.tar
+.env
+docker-compose.override.yml
