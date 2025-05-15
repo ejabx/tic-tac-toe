@@ -101,7 +101,7 @@ export default function Board() {
                     <div style={{ padding: '16px' }}>
                         <div
                             style={{ margin: '8px', padding: '16px' }}
-                            className={`cursor-default text-9xl m-8 relative after:bg-black after:absolute after:h-1 after:w-0 after:bottom-0 after:left-0 after:transition-all after:duration-300 ${player === Player.X ? 'after:w-full' : 'after:w-0'}`}
+                            className={`cursor-default text-5xl lg:text-9xl md:text-8xl sm:text-6xl relative after:bg-black after:absolute after:h-1 after:w-0 after:bottom-0 after:left-0 after:transition-all after:duration-300 ${player === Player.X ? 'after:w-full' : 'after:w-0'}`}
                         >
                             X
                         </div>
@@ -115,7 +115,7 @@ export default function Board() {
                                     : () => null
                             return (
                                 <div
-                                    className="w-30 h-30 text-8xl bg-white border-2 font-semibold text-center content-center text-black hover:bg-neutral-200 hover:cursor-pointer rounded shadow"
+                                    className="w-9 h-9 text-2xl lg:w-25 lg:h-25 lg:text-8xl sm:w-20 sm:h-20 sm:text-7xl bg-white border-2 font-semibold text-center content-center text-black hover:bg-neutral-200 hover:cursor-pointer rounded shadow"
                                     onClick={clicker}
                                 >
                                     {
@@ -130,7 +130,7 @@ export default function Board() {
                     <div style={{ padding: '16px' }}>
                         <div
                             style={{ margin: '8px', padding: '16px' }}
-                            className={`cursor-default text-9xl m-8 relative after:bg-black after:absolute after:h-1 after:w-0 after:bottom-0 after:left-0 after:transition-all after:duration-300 ${player === Player.O ? 'after:w-full' : 'after:w-0'}`}
+                            className={`cursor-default text-5xl lg:text-9xl md:text-8xl sm:text-6xl relative after:bg-black after:absolute after:h-1 after:w-0 after:bottom-0 after:left-0 after:transition-all after:duration-300 ${player === Player.O ? 'after:w-full' : 'after:w-0'}`}
                         >
                             O
                         </div>
@@ -138,7 +138,7 @@ export default function Board() {
                 </div>
                 <div className="flex items-center transition-opacity duration-300">
                     <button
-                        className="m-10 text-white rotate-350 bg-rose-300 hover:text-rose-300 hover:bg-white"
+                        className="m-10 w-50 text-3xl md:w-80 md:text-5xl text-white rotate-350 bg-rose-300 hover:text-rose-300 hover:bg-white"
                         onClick={() => setQuitting(true)}
                     >
                         Game Over?
@@ -149,17 +149,23 @@ export default function Board() {
                 isOpen={win || draw || quit != Player.None}
                 title={getGameOverTitle()}
             >
-                <button className="hover:text-blue-500" onClick={newGame}>
+                <button
+                    className="text-3xl hover:text-blue-500"
+                    onClick={newGame}
+                >
                     Try Again?
                 </button>
             </Modal>
             <Modal isOpen={quitting} title="Are you sure?">
                 <div>
-                    <button className="hover:text-blue-500" onClick={quitGame}>
+                    <button
+                        className="text-3xl hover:text-blue-500"
+                        onClick={quitGame}
+                    >
                         Yes
                     </button>
                     <button
-                        className="hover:text-blue-500"
+                        className="text-3xl hover:text-blue-500"
                         onClick={() => setQuitting(false)}
                     >
                         No
@@ -169,7 +175,7 @@ export default function Board() {
             <Modal isOpen={networkError} title="Lost Network Connection">
                 <div>
                     <button
-                        className="hover:text-blue-500"
+                        className="text-3xl hover:text-blue-500"
                         onClick={testNetworkConnection}
                     >
                         Try Again?
