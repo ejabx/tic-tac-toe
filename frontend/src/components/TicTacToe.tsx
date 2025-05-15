@@ -29,21 +29,27 @@ export default function Board() {
     const [networkError, setNetworkError] = useState<boolean>(false)
 
     useEffect(() => {
-        api.get('/game')
+        refreshBoard()
+    }, [player, win, draw, networkError])
+
+    const refreshBoard = async () => {
+        return api
+            .get('/game')
             .then((res) => setBoard(res.data))
             .catch((err) => {
-                console.error(err)
-                setNetworkError(true)
+                throw err
             })
-    }, [player, win, draw, networkError])
+    }
 
     const makePlay = (index: number) => () => {
         api.put(`/game/${player}/${index}`)
-            .then((res) => {
+            .then(async (res) => {
                 const { isWin, isDraw } = res.data
+
+                await refreshBoard()
+
                 setWin(isWin)
                 setDraw(isDraw)
-
                 if (!isWin && !isDraw) {
                     setPlayer(player === Player.X ? Player.O : Player.X)
                 }
@@ -56,8 +62,7 @@ export default function Board() {
 
     const newGame = () => {
         api.delete('/game')
-            .then(() => api.get('/game'))
-            .then((res) => setBoard(res.data))
+            .then(refreshBoard)
             .then(() => {
                 setPlayer(Player.X)
                 setWin(false)
@@ -77,7 +82,7 @@ export default function Board() {
 
     const testNetworkConnection = () => {
         setNetworkError(false)
-        api.get('/game').catch((err) => {
+        refreshBoard().catch((err) => {
             console.error(err)
             setNetworkError(true)
         })
@@ -120,9 +125,18 @@ export default function Board() {
                                 cell === 0 && !gameover
                                     ? makePlay(index)
                                     : () => null
+                            const hoverStyle =
+                                cell === 0
+                                    ? `hover:after:opacity-10 hover:after:content-['${
+                                          PlayerMark[
+                                              player as keyof typeof PlayerMark
+                                          ]
+                                      }']`
+                                    : ''
+
                             return (
                                 <div
-                                    className="w-9 h-9 text-2xl lg:w-25 lg:h-25 lg:text-8xl sm:w-20 sm:h-20 sm:text-7xl bg-white border-2 font-semibold text-center content-center text-black hover:bg-neutral-200 hover:cursor-pointer rounded shadow"
+                                    className={`w-9 h-9 text-2xl lg:w-25 lg:h-25 lg:text-8xl sm:w-20 sm:h-20 sm:text-7xl bg-white border-2 font-semibold text-center content-center text-black hover:bg-neutral-200 hover:cursor-pointer ${hoverStyle} rounded shadow"`}
                                     onClick={clicker}
                                 >
                                     {
