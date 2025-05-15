@@ -35,7 +35,7 @@ export default function Board() {
                 console.error(err)
                 setNetworkError(true)
             })
-    }, [player, win, draw])
+    }, [player, win, draw, networkError])
 
     const makePlay = (index: number) => () => {
         api.put(`/game/${player}/${index}`)
