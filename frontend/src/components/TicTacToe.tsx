@@ -84,10 +84,17 @@ export default function Board() {
     }
 
     const getGameOverTitle = () => {
-        if (win) {
-            return `Player ${PlayerMark[player as keyof typeof PlayerMark]} won!`
-        } else if (quit) {
-            return `Player ${PlayerMark[player as keyof typeof PlayerMark]} resigns`
+        if (win || quit) {
+            return (
+                <span>
+                    Player&nbsp;
+                    <span className="fixed font-sans text-4xl animate-bounce text-blue-300">
+                        {PlayerMark[player as keyof typeof PlayerMark]}
+                    </span>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    {win ? 'wins' : 'resigns'}!
+                </span>
+            )
         }
 
         return 'Draw'
@@ -138,7 +145,7 @@ export default function Board() {
                 </div>
                 <div className="flex items-center transition-opacity duration-300">
                     <button
-                        className="m-10 w-50 text-3xl md:w-80 md:text-5xl text-white rotate-350 bg-rose-300 hover:text-rose-300 hover:bg-white"
+                        className="m-10 w-50 text-3xl md:w-80 md:text-5xl text-white rotate-350 bg-rose-300 hover:text-rose-300 hover:bg-white hover:cursor-pointer"
                         onClick={() => setQuitting(true)}
                     >
                         Game Over?
@@ -150,7 +157,7 @@ export default function Board() {
                 title={getGameOverTitle()}
             >
                 <button
-                    className="text-3xl hover:text-blue-500"
+                    className="text-3xl hover:text-blue-500 hover:cursor-pointer"
                     onClick={newGame}
                 >
                     Try Again?
@@ -159,13 +166,13 @@ export default function Board() {
             <Modal isOpen={quitting} title="Are you sure?">
                 <div>
                     <button
-                        className="text-3xl hover:text-blue-500"
+                        className="text-3xl hover:text-blue-500 hover:cursor-pointer"
                         onClick={quitGame}
                     >
                         Yes
                     </button>
                     <button
-                        className="text-3xl hover:text-blue-500"
+                        className="text-3xl hover:text-blue-500 hover:cursor-pointer"
                         onClick={() => setQuitting(false)}
                     >
                         No
@@ -175,7 +182,7 @@ export default function Board() {
             <Modal isOpen={networkError} title="Lost Network Connection">
                 <div>
                     <button
-                        className="text-3xl hover:text-blue-500"
+                        className="text-3xl hover:text-blue-500 hover:cursor-pointer"
                         onClick={testNetworkConnection}
                     >
                         Try Again?
