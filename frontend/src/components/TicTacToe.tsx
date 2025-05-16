@@ -108,12 +108,12 @@ export default function Board() {
     return (
         <>
             <div className="flex flex-col items-center">
-                <div className="text-6xl m-10">Tic Tac Toe</div>
+                <div className="text-6xl m-10 dark:text-black">Tic Tac Toe</div>
                 <div className="flex flex-row items-center">
                     <div style={{ padding: '16px' }}>
                         <div
                             style={{ margin: '8px', padding: '16px' }}
-                            className={`cursor-default text-5xl lg:text-9xl md:text-8xl sm:text-6xl relative after:bg-black after:absolute after:h-1 after:w-0 after:bottom-0 after:left-0 after:transition-all after:duration-300 ${player === Player.X ? 'after:w-full' : 'after:w-0'}`}
+                            className={`cursor-default text-5xl dark:text-white lg:text-9xl md:text-8xl sm:text-6xl relative dark:after:bg-white after:bg-black after:absolute after:h-1 after:w-0 after:bottom-0 after:left-0 after:transition-all after:duration-300 ${player === Player.X ? 'after:w-full' : 'after:w-0'}`}
                         >
                             X
                         </div>
@@ -125,9 +125,9 @@ export default function Board() {
                                 cell === 0 && !gameover
                                     ? makePlay(index)
                                     : () => null
-                            const hoverStyle =
+                            const afterContentStyle =
                                 cell === 0
-                                    ? `hover:after:opacity-10 hover:after:content-['${
+                                    ? `hover:after:opacity-10 text-red hover:after:content-['${
                                           PlayerMark[
                                               player as keyof typeof PlayerMark
                                           ]
@@ -136,7 +136,7 @@ export default function Board() {
 
                             return (
                                 <div
-                                    className={`w-9 h-9 text-2xl lg:w-25 lg:h-25 lg:text-8xl sm:w-20 sm:h-20 sm:text-7xl bg-white border-2 font-semibold text-center content-center text-black hover:bg-neutral-200 hover:cursor-pointer ${hoverStyle} rounded shadow"`}
+                                    className={`boardcell w-9 h-9 text-2xl lg:w-25 lg:h-25 lg:text-8xl sm:w-20 sm:h-20 sm:text-7xl bg-white dark:bg-black dark:text-white border-2 font-semibold text-center content-center text-black hover:bg-neutral-200 dark:hover:bg-neutral-500 hover:cursor-pointer ${afterContentStyle} rounded shadow"`}
                                     onClick={clicker}
                                 >
                                     {
@@ -151,7 +151,7 @@ export default function Board() {
                     <div style={{ padding: '16px' }}>
                         <div
                             style={{ margin: '8px', padding: '16px' }}
-                            className={`cursor-default text-5xl lg:text-9xl md:text-8xl sm:text-6xl relative after:bg-black after:absolute after:h-1 after:w-0 after:bottom-0 after:left-0 after:transition-all after:duration-300 ${player === Player.O ? 'after:w-full' : 'after:w-0'}`}
+                            className={`cursor-default text-5xl dark:text-white lg:text-9xl md:text-8xl sm:text-6xl relative after:bg-black dark:after:bg-white after:absolute after:h-1 after:w-0 after:bottom-0 after:left-0 after:transition-all after:duration-300 ${player === Player.O ? 'after:w-full' : 'after:w-0'}`}
                         >
                             O
                         </div>
@@ -159,7 +159,7 @@ export default function Board() {
                 </div>
                 <div className="flex items-center transition-opacity duration-300">
                     <button
-                        className="m-10 w-50 text-3xl md:w-80 md:text-5xl text-white rotate-350 bg-rose-300 hover:text-rose-300 hover:bg-white hover:cursor-pointer"
+                        className="m-10 w-50 text-3xl md:w-80 md:text-5xl text-white dark:text-black rotate-350 bg-rose-300 hover:text-rose-300 hover:bg-white hover:cursor-pointer"
                         onClick={() => setQuitting(true)}
                     >
                         Game Over?
@@ -171,7 +171,7 @@ export default function Board() {
                 title={getGameOverTitle()}
             >
                 <button
-                    className="text-3xl hover:text-blue-500 hover:cursor-pointer"
+                    className="text-3xl dark:text-black hover:text-blue-500 hover:cursor-pointer"
                     onClick={newGame}
                 >
                     Try Again?
@@ -180,13 +180,13 @@ export default function Board() {
             <Modal isOpen={quitting} title="Are you sure?">
                 <div>
                     <button
-                        className="text-3xl hover:text-blue-500 hover:cursor-pointer"
+                        className="text-3xl dark:text-black hover:text-blue-500 hover:cursor-pointer"
                         onClick={quitGame}
                     >
                         Yes
                     </button>
                     <button
-                        className="text-3xl hover:text-blue-500 hover:cursor-pointer"
+                        className="text-3xl dark:text-black hover:text-blue-500 hover:cursor-pointer"
                         onClick={() => setQuitting(false)}
                     >
                         No
@@ -196,7 +196,7 @@ export default function Board() {
             <Modal isOpen={networkError} title="Lost Network Connection">
                 <div>
                     <button
-                        className="text-3xl hover:text-blue-500 hover:cursor-pointer"
+                        className="text-3xl dark:text-black hover:text-blue-500 hover:cursor-pointer"
                         onClick={testNetworkConnection}
                     >
                         Try Again?
