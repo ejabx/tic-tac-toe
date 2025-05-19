@@ -19,6 +19,8 @@ namespace TicTacToe.Api
                                     .AllowAnyMethod());
             });
 
+            builder.Services.AddSingleton<IBoardService, BoardService>();
+            builder.Services.AddSingleton<IPlayerService, HumanPlayerService>();
             builder.Services.AddSingleton<IGameService, GameService>();
 
             var app = builder.Build();

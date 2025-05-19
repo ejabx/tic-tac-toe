@@ -2,87 +2,40 @@ using Microsoft.EntityFrameworkCore;
 
 namespace TicTacToe.Api.Services
 {
-    public enum Player
-    {
-        PLAYER_NONE,
-        PLAYER_X,
-        PLAYER_O,
-    }
-
-    public enum Position
-    {
-        MOVE_1,
-        MOVE_2,
-        MOVE_3,
-        MOVE_4,
-        MOVE_5,
-        MOVE_6,
-        MOVE_7,
-        MOVE_8,
-        MOVE_9,
-    }
-
-    public readonly struct MatchResult
-    {
-        public MatchResult(bool win, bool draw)
-        {
-            isWin = win;
-            isDraw = draw;
-        }
-
-        public bool isWin { get; init; }
-        public bool isDraw { get; init; }
-    }
-
     public interface IGameService
     {
-        Task<Player[]> GetBoard();
+        Player[] GetBoard();
 
-        Task<bool> ResetBoard();
+        void ResetBoard();
 
-        Task<MatchResult> MakeMove(Player player, Position move);
+        MatchResult MakeMove(Player player, Position move);
     }
 
     public class GameService : IGameService
     {
-        private Player[] _positions = { Player.PLAYER_NONE, Player.PLAYER_NONE, Player.PLAYER_NONE, Player.PLAYER_NONE, Player.PLAYER_NONE, Player.PLAYER_NONE, Player.PLAYER_NONE, Player.PLAYER_NONE, Player.PLAYER_NONE };
+        private readonly IBoardService _boardService;
+        private readonly IPlayerService _playerService;
 
-        public async Task<Player[]> GetBoard()
+        public GameService(IBoardService boardService, IPlayerService playerService)
         {
-            return _positions;
+            _boardService = boardService;
+            _playerService = playerService;
         }
 
-        public async Task<bool> ResetBoard()
+        public Player[] GetBoard()
         {
-            _positions = Enumerable.Range(0, 9).Select(n => Player.PLAYER_NONE).ToArray();
-
-            return true;
+            return _boardService.GetBoard();
         }
 
-        public async Task<MatchResult> MakeMove(Player player, Position move)
+        public void ResetBoard()
         {
-            bool isWin = false;
-            bool isDraw = false;
+            _boardService.ResetBoard();
+        }
 
-            int pos = (int)move;
-            _positions[pos] = player;
-
-            var row = pos / 3;
-            var col = pos % 3;
-
-            // test row
-            if (_positions[row * 3 + 0] == player && _positions[row * 3 + 1] == player && _positions[row * 3 + 2] == player) isWin = true;
-
-            // test col
-            if (_positions[0 * 3 + col] == player && _positions[1 * 3 + col] == player && _positions[2 * 3 + col] == player) isWin = true;
-
-            // test center
-            if (_positions[0] == player && _positions[4] == player && _positions[8] == player) isWin = true;
-            if (_positions[2] == player && _positions[4] == player && _positions[6] == player) isWin = true;
-
-            isDraw = _positions.Count(pos => pos != Player.PLAYER_NONE) == 9;
-
-            return new MatchResult(isWin, isDraw);
+        public MatchResult MakeMove(Player player, Position position)
+        {
+            _playerService.MakeMove(player, position, _boardService);
+            return _boardService.EvalWinner(player, position);
         }
     }
 }
