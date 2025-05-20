@@ -17,14 +17,16 @@ namespace TicTacToe.Api.Services
 
     public readonly struct MatchResult
     {
-        public MatchResult(bool win, bool draw)
+        public MatchResult(bool win, bool gameDraw, Player gameWinner)
         {
             isWin = win;
-            isDraw = draw;
+            isDraw = gameDraw;
+            winner = gameWinner;
         }
 
         public bool isWin { get; init; }
         public bool isDraw { get; init; }
+        public Player winner { get; init; }
     }
 
     public interface IBoardService
@@ -74,7 +76,7 @@ namespace TicTacToe.Api.Services
 
             isDraw = _positions.Count(pos => pos != Player.PLAYER_NONE) == 9;
 
-            return new MatchResult(isWin, isDraw);
+            return new MatchResult(isWin, isDraw, isDraw ? Player.PLAYER_NONE : player);
         }
     }
 }

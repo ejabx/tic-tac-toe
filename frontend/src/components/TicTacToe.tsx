@@ -22,7 +22,7 @@ export default function Board() {
     )
     const [computerOpponent, setComputerComponent] = useState<
         typeof Player.None | typeof Player.X | typeof Player.O
-    >(Player.None)
+    >(Player.O)
     const [board, setBoard] = useState(Array(9).fill(Player.None))
     const [win, setWin] = useState<boolean>(false)
     const [draw, setDraw] = useState<boolean>(false)
