@@ -1,6 +1,4 @@
-import React from 'react'
-
-export default function Thinking() {
+export default function ThinkBubble() {
     return (
         <div className="flex fixed justify-start mb-2 z-1">
             <div className="flex items-center space-x-1 bg-gray-200 text-gray-700 p-3 rounded-full w-auto max-w-[100px] shadow">

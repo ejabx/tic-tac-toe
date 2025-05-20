@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { api } from '../services/api'
 import Modal from './Modal'
-import Thinking from './Thinking'
+import ThinkBubble from './ThinkBubble'
 import './TicTacToe.css'
 
 const Player = {
@@ -127,7 +127,7 @@ export default function Board() {
     return (
         <>
             <div className="flex flex-col items-center">
-                <div className="text-6xl m-10 dark:text-black">Tic Tac Toe</div>
+                <div className="text-6xl m-10 text-black dark:text-white font-bold">Tic Tac Toe</div>
                 <div className="flex flex-row items-center">
                     <div style={{ padding: '16px' }}>
                         <div
@@ -137,7 +137,7 @@ export default function Board() {
                             X
                             {thinking && computerOpponent === Player.X ? (
                                 <div className="absolute top-0 right-5 sm:right-10">
-                                    <Thinking />
+                                    <ThinkBubble />
                                 </div>
                             ) : (
                                 ''
@@ -154,19 +154,13 @@ export default function Board() {
                             const clicker = isValidCell
                                 ? makePlay(player, index)
                                 : () => null
-                            const afterContentStyle = isValidCell
-                                ? `hover:after:opacity-10 hover:after:content-['${
-                                      PlayerMark[
-                                          player as keyof typeof PlayerMark
-                                      ]
-                                  }']`
-                                : ''
-                            const hoverType = isValidCell
-                                ? 'hover:cursor-pointer'
+                            const hoverStyle = isValidCell
+                                ? 'hover:cursor-pointer hover:bg-neutral-200 dark:hover:bg-neutral-500'
                                 : 'hover:cursor-default'
                             return (
                                 <div
-                                    className={`boardcell w-9 h-9 text-2xl lg:w-25 lg:h-25 lg:text-8xl sm:w-20 sm:h-20 sm:text-7xl bg-white dark:bg-black dark:text-white border-2 font-semibold text-center content-center text-black ${hoverType} ${afterContentStyle} rounded shadow"`}
+                                    data-player-marker-preview={isValidCell ? PlayerMark[player as keyof typeof PlayerMark] : ''}
+                                    className={`boardcell w-9 h-9 text-2xl lg:w-25 lg:h-25 lg:text-8xl sm:w-20 sm:h-20 sm:text-7xl bg-white dark:bg-black dark:text-white border-2 font-semibold text-center content-center text-black hover:after:opacity-10 hover:after:content-[attr(data-player-marker-preview)] ${hoverStyle} rounded shadow"`}
                                     onClick={clicker}
                                 >
                                     {
@@ -186,7 +180,7 @@ export default function Board() {
                             O
                             {thinking && computerOpponent === Player.O ? (
                                 <div className="absolute top-0 right-5 sm:right-10">
-                                    <Thinking />
+                                    <ThinkBubble />
                                 </div>
                             ) : (
                                 ''
