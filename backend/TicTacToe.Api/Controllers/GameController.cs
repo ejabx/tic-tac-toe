@@ -14,25 +14,32 @@ namespace TicTacToe.Api.Controllers
             _gameService = gameService;
         }
 
-        [HttpGet]
+        [HttpGet("board")]
         public Task<IActionResult> GetBoard()
         {
             var board = _gameService.GetBoard();
             return Task.FromResult<IActionResult>(Ok(board));
         }
 
-        [HttpDelete]
+        [HttpPost("reset")]
         public Task<IActionResult> DeleteBoard()
         {
             _gameService.ResetBoard();
             return Task.FromResult<IActionResult>(Ok(true));
         }
 
-        [HttpPut("{player}/{move}")]
-        public Task<IActionResult> MakeMove(Player player, Position move)
+        [HttpPost("move/{player}/{position}")]
+        public Task<IActionResult> MakeMove(Player player, Position position)
         {
-            var result = _gameService.MakeMove(player, move);
+            var result = _gameService.MakeMove(player, position);
             return Task.FromResult<IActionResult>(Ok(result));
+        }
+
+        [HttpPost("switch-to-computer/{player}")]
+        public Task<IActionResult> SwitchToComputer(Player player)
+        {
+            _gameService.SwitchToComputer(player);
+            return Task.FromResult<IActionResult>(Ok(true));
         }
     }
 }

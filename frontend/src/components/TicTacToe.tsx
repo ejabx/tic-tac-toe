@@ -20,6 +20,9 @@ export default function Board() {
     const [player, setPlayer] = useState<typeof Player.X | typeof Player.O>(
         Player.X
     )
+    const [computerOpponent, setComputerComponent] = useState<
+        typeof Player.None | typeof Player.X | typeof Player.O
+    >(Player.None)
     const [board, setBoard] = useState(Array(9).fill(Player.None))
     const [win, setWin] = useState<boolean>(false)
     const [draw, setDraw] = useState<boolean>(false)
@@ -28,7 +31,6 @@ export default function Board() {
     )
     const [quitting, setQuitting] = useState<boolean>(false)
     const [networkError, setNetworkError] = useState<boolean>(false)
-    const [computerOpponent] = useState<boolean>(true)
     const [thinking, setThinking] = useState<boolean>(false)
 
     useEffect(() => {
@@ -36,23 +38,29 @@ export default function Board() {
     }, [player, win, draw, networkError])
 
     useEffect(() => {
-        if (computerOpponent && player == Player.O) {
+        api.post(`/switch-to-computer/${computerOpponent}`).catch((err) => {
+            throw err
+        })
+    }, [computerOpponent])
+
+    useEffect(() => {
+        if (player === computerOpponent && !win && !draw) {
             setThinking(true)
-            setTimeout(() => makePlay(0)(), 1000) // index doesn't matter. backend will compute
+            setTimeout(() => makePlay(computerOpponent, 0)(), 1000) // index doesn't matter. backend will compute
         }
-    }, [computerOpponent, player])
+    }, [player, win, draw])
 
     const refreshBoard = async () => {
         return api
-            .get('/game')
+            .get('/board')
             .then((res) => setBoard(res.data))
             .catch((err) => {
                 throw err
             })
     }
 
-    const makePlay = (index: number) => () => {
-        api.put(`/game/${player}/${index}`)
+    const makePlay = (player: number, position: number) => () => {
+        api.post(`/move/${player}/${position}`)
             .then(async (res) => {
                 const { isWin, isDraw } = res.data
 
@@ -72,7 +80,7 @@ export default function Board() {
     }
 
     const newGame = () => {
-        api.delete('/game')
+        api.post('/reset')
             .then(refreshBoard)
             .then(() => {
                 setPlayer(Player.X)
@@ -127,6 +135,13 @@ export default function Board() {
                             className={`cursor-default text-5xl dark:text-white lg:text-9xl md:text-8xl sm:text-6xl relative dark:after:bg-white after:bg-black after:absolute after:h-1 after:w-0 after:bottom-0 after:left-0 after:transition-all after:duration-300 ${player === Player.X ? 'after:w-full' : 'after:w-0'}`}
                         >
                             X
+                            {thinking && computerOpponent === Player.X ? (
+                                <div className="absolute top-0 right-5 sm:right-10">
+                                    <Thinking />
+                                </div>
+                            ) : (
+                                ''
+                            )}
                         </div>
                     </div>
                     <div className="grid grid-cols-3 gap-2">
@@ -135,17 +150,16 @@ export default function Board() {
                             const isValidCell: boolean =
                                 cell === 0 &&
                                 !isGameOver &&
-                                !(computerOpponent && player == Player.O)
+                                !(computerOpponent === player)
                             const clicker = isValidCell
-                                ? makePlay(index)
+                                ? makePlay(player, index)
                                 : () => null
-                            const afterContentStyle =
-                                isValidCell
-                                    ? `hover:after:opacity-10 hover:after:content-['${
-                                          PlayerMark[
-                                              player as keyof typeof PlayerMark
-                                          ]
-                                      }']`
+                            const afterContentStyle = isValidCell
+                                ? `hover:after:opacity-10 hover:after:content-['${
+                                      PlayerMark[
+                                          player as keyof typeof PlayerMark
+                                      ]
+                                  }']`
                                 : ''
                             const hoverType = isValidCell
                                 ? 'hover:cursor-pointer'
@@ -170,7 +184,7 @@ export default function Board() {
                             className={`cursor-default text-5xl dark:text-white lg:text-9xl md:text-8xl sm:text-6xl relative after:bg-black dark:after:bg-white after:absolute after:h-1 after:w-0 after:bottom-0 after:left-0 after:transition-all after:duration-300 ${player === Player.O ? 'after:w-full' : 'after:w-0'}`}
                         >
                             O
-                            {thinking ? (
+                            {thinking && computerOpponent === Player.O ? (
                                 <div className="absolute top-0 right-5 sm:right-10">
                                     <Thinking />
                                 </div>

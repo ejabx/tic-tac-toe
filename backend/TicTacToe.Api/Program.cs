@@ -18,6 +18,7 @@ namespace TicTacToe.Api
                                     .AllowAnyHeader()
                                     .AllowAnyMethod());
             });
+            builder.Services.Configure<RouteOptions>(options => options.LowercaseUrls = true);
 
             builder.Services.AddSingleton<IBoardService, BoardService>();
             builder.Services.AddSingleton<IGameService, GameService>();

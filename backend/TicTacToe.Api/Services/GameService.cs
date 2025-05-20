@@ -9,12 +9,14 @@ namespace TicTacToe.Api.Services
         void ResetBoard();
 
         MatchResult MakeMove(Player player, Position move);
+
+        void SwitchToComputer(Player player);
     }
 
     public class GameService : IGameService
     {
         private readonly IBoardService _boardService;
-        private readonly (IPlayerService, IPlayerService) _playerServices;
+        private (IPlayerService, IPlayerService) _playerServices;
 
         public GameService(IBoardService boardService)
         {
@@ -40,6 +42,22 @@ namespace TicTacToe.Api.Services
                 _playerServices.Item2.MakeMove(player, ref position, _boardService);
 
             return _boardService.EvalWinner(player, position);
+        }
+
+        public void SwitchToComputer(Player player)
+        {
+            switch (player)
+            {
+                case Player.PLAYER_NONE:
+                    _playerServices = (new HumanPlayerService(), new HumanPlayerService());
+                    break;
+                case Player.PLAYER_X:
+                    _playerServices = (new ComputerPlayerService(), new HumanPlayerService());
+                    break;
+                case Player.PLAYER_O:
+                    _playerServices = (new HumanPlayerService(), new ComputerPlayerService());
+                    break;
+            }
         }
     }
 }
