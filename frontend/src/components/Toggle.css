@@ -1,0 +1,11 @@
+span {
+  font-family: 'Courier New', Courier, monospace;
+}
+
+label {
+  border-radius: 8px;
+  padding: 0.4em 0.4em;
+
+  font-weight: 500;
+  font-family: 'Pixelify Sans' !important;
+}

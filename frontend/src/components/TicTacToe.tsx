@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { api } from '../services/api'
 import Modal from './Modal'
 import ThinkBubble from './ThinkBubble'
+import Toggle from './Toggle'
 import './TicTacToe.css'
 
 const Player = {
@@ -17,8 +18,11 @@ const PlayerMark = {
 }
 
 export default function Board() {
+    const [playerMark, setPlayerMark] = useState<
+        typeof Player.X | typeof Player.O
+    >(Player.X)
     const [player, setPlayer] = useState<typeof Player.X | typeof Player.O>(
-        Player.X
+        playerMark
     )
     const [computerOpponent, setComputerComponent] = useState<
         typeof Player.None | typeof Player.X | typeof Player.O
@@ -26,9 +30,7 @@ export default function Board() {
     const [board, setBoard] = useState(Array(9).fill(Player.None))
     const [win, setWin] = useState<boolean>(false)
     const [draw, setDraw] = useState<boolean>(false)
-    const [quit, setQuit] = useState<typeof Player.X | typeof Player.O>(
-        Player.None
-    )
+    const [quit, setQuit] = useState<boolean>(false)
     const [quitting, setQuitting] = useState<boolean>(false)
     const [networkError, setNetworkError] = useState<boolean>(false)
     const [thinking, setThinking] = useState<boolean>(false)
@@ -84,9 +86,16 @@ export default function Board() {
             .then(refreshBoard)
             .then(() => {
                 setPlayer(Player.X)
+                setComputerComponent(
+                    computerOpponent === Player.None
+                        ? Player.None
+                        : playerMark === Player.X
+                          ? Player.O
+                          : Player.X
+                )
                 setWin(false)
                 setDraw(false)
-                setQuit(Player.None)
+                setQuit(false)
             })
             .catch((err) => {
                 console.error(err)
@@ -96,7 +105,23 @@ export default function Board() {
 
     const quitGame = () => {
         setQuitting(false)
-        setQuit(player)
+        setQuit(true)
+    }
+
+    const configPlayer = (index: number) => {
+        if (index === 0) {
+            setPlayerMark(Player.X)
+        } else {
+            setPlayerMark(Player.O)
+        }
+    }
+
+    const configComputer = (index: number) => {
+        if (index === 0) {
+            setComputerComponent(Player.None)
+        } else {
+            setComputerComponent(Player.X ? Player.O : Player.X)
+        }
     }
 
     const testNetworkConnection = () => {
@@ -108,7 +133,7 @@ export default function Board() {
     }
 
     const getGameOverTitle = () => {
-        if (win || quit) {
+        if (win) {
             return (
                 <span>
                     Player&nbsp;
@@ -119,6 +144,8 @@ export default function Board() {
                     {win ? 'wins' : 'resigns'}!
                 </span>
             )
+        } else if (quit) {
+            return 'New Game'
         }
 
         return 'Draw'
@@ -127,7 +154,9 @@ export default function Board() {
     return (
         <>
             <div className="flex flex-col items-center">
-                <div className="text-6xl m-10 text-black dark:text-white font-bold">Tic Tac Toe</div>
+                <div className="text-6xl m-10 text-black dark:text-white font-bold">
+                    Tic Tac Toe
+                </div>
                 <div className="flex flex-row items-center">
                     <div style={{ padding: '16px' }}>
                         <div
@@ -136,7 +165,7 @@ export default function Board() {
                         >
                             X
                             {thinking && computerOpponent === Player.X ? (
-                                <div className="absolute top-0 right-5 sm:right-10">
+                                <div className="absolute -top-10 right-5 sm:right-10">
                                     <ThinkBubble />
                                 </div>
                             ) : (
@@ -159,7 +188,13 @@ export default function Board() {
                                 : 'hover:cursor-default'
                             return (
                                 <div
-                                    data-player-marker-preview={isValidCell ? PlayerMark[player as keyof typeof PlayerMark] : ''}
+                                    data-player-marker-preview={
+                                        isValidCell
+                                            ? PlayerMark[
+                                                  player as keyof typeof PlayerMark
+                                              ]
+                                            : ''
+                                    }
                                     className={`boardcell w-9 h-9 text-2xl lg:w-25 lg:h-25 lg:text-8xl sm:w-20 sm:h-20 sm:text-7xl bg-white dark:bg-black dark:text-white border-2 font-semibold text-center content-center text-black hover:after:opacity-10 hover:after:content-[attr(data-player-marker-preview)] ${hoverStyle} rounded shadow"`}
                                     onClick={clicker}
                                 >
@@ -179,7 +214,7 @@ export default function Board() {
                         >
                             O
                             {thinking && computerOpponent === Player.O ? (
-                                <div className="absolute top-0 right-5 sm:right-10">
+                                <div className="absolute -top-10 right-5 sm:right-10">
                                     <ThinkBubble />
                                 </div>
                             ) : (
@@ -193,47 +228,60 @@ export default function Board() {
                         className="m-10 w-50 text-3xl md:w-80 md:text-5xl text-white dark:text-black rotate-350 bg-rose-300 hover:text-rose-300 hover:bg-white hover:cursor-pointer"
                         onClick={() => setQuitting(true)}
                     >
-                        Game Over?
+                        New Game?
                     </button>
                 </div>
             </div>
-            <Modal
-                isOpen={win || draw || quit != Player.None}
-                title={getGameOverTitle()}
-            >
-                <button
-                    className="text-3xl dark:text-black hover:text-blue-500 hover:cursor-pointer"
-                    onClick={newGame}
-                >
-                    Try Again?
-                </button>
-            </Modal>
-            <Modal isOpen={quitting} title="Are you sure?">
-                <div>
+            <>
+                <Modal isOpen={win || draw || quit} title={getGameOverTitle()}>
+                    <div className="flex flex-col mx-3 my-4">
+                        <Toggle
+                            label="Player Mark"
+                            options={['X', 'O']}
+                            onSelect={configPlayer}
+                            defaultIndex={playerMark === Player.X ? 0 : 1}
+                        />
+                        <Toggle
+                            label="Computer"
+                            options={['Off', 'Normal', 'Hard']}
+                            onSelect={configComputer}
+                            defaultIndex={computerOpponent === 0 ? 0 : 1}
+                        />
+                    </div>
                     <button
                         className="text-3xl dark:text-black hover:text-blue-500 hover:cursor-pointer"
-                        onClick={quitGame}
+                        onClick={newGame}
                     >
-                        Yes
+                        Start
                     </button>
-                    <button
-                        className="text-3xl dark:text-black hover:text-blue-500 hover:cursor-pointer"
-                        onClick={() => setQuitting(false)}
-                    >
-                        No
-                    </button>
-                </div>
-            </Modal>
-            <Modal isOpen={networkError} title="Lost Network Connection">
-                <div>
-                    <button
-                        className="text-3xl dark:text-black hover:text-blue-500 hover:cursor-pointer"
-                        onClick={testNetworkConnection}
-                    >
-                        Try Again?
-                    </button>
-                </div>
-            </Modal>
+                </Modal>
+                <Modal isOpen={quitting} title="Are you sure?">
+                    <div>
+                        <button
+                            className="text-3xl dark:text-black hover:text-blue-500 hover:cursor-pointer"
+                            onClick={quitGame}
+                        >
+                            Yes
+                        </button>
+                        <button
+                            className="text-3xl dark:text-black hover:text-blue-500 hover:cursor-pointer"
+                            onClick={() => setQuitting(false)}
+                        >
+                            No
+                        </button>
+                    </div>
+                </Modal>
+                <Modal isOpen={networkError} title="Lost Network Connection">
+                    <div>
+                        <button
+                            className="text-3xl dark:text-black hover:text-blue-500 hover:cursor-pointer"
+                            onClick={testNetworkConnection}
+                        >
+                            Try Again?
+                        </button>
+                    </div>
+                </Modal>
+            </>
         </>
     )
 }
