@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { api } from '../services/api'
 import Modal from './Modal'
+import Thinking from './Thinking'
 import './TicTacToe.css'
 
 const Player = {
@@ -27,10 +28,19 @@ export default function Board() {
     )
     const [quitting, setQuitting] = useState<boolean>(false)
     const [networkError, setNetworkError] = useState<boolean>(false)
+    const [computerOpponent] = useState<boolean>(true)
+    const [thinking, setThinking] = useState<boolean>(false)
 
     useEffect(() => {
         refreshBoard()
     }, [player, win, draw, networkError])
+
+    useEffect(() => {
+        if (computerOpponent && player == Player.O) {
+            setThinking(true)
+            setTimeout(() => makePlay(0)(), 1000) // index doesn't matter. backend will compute
+        }
+    }, [computerOpponent, player])
 
     const refreshBoard = async () => {
         return api
@@ -47,9 +57,10 @@ export default function Board() {
                 const { isWin, isDraw } = res.data
 
                 await refreshBoard()
-
                 setWin(isWin)
                 setDraw(isDraw)
+                setThinking(false)
+
                 if (!isWin && !isDraw) {
                     setPlayer(player === Player.X ? Player.O : Player.X)
                 }
@@ -120,23 +131,28 @@ export default function Board() {
                     </div>
                     <div className="grid grid-cols-3 gap-2">
                         {board.map((cell: number, index: number) => {
-                            const gameover: boolean = win || draw
-                            const clicker =
-                                cell === 0 && !gameover
-                                    ? makePlay(index)
-                                    : () => null
+                            const isGameOver: boolean = win || draw
+                            const isValidCell: boolean =
+                                cell === 0 &&
+                                !isGameOver &&
+                                !(computerOpponent && player == Player.O)
+                            const clicker = isValidCell
+                                ? makePlay(index)
+                                : () => null
                             const afterContentStyle =
-                                cell === 0
-                                    ? `hover:after:opacity-10 text-red hover:after:content-['${
+                                isValidCell
+                                    ? `hover:after:opacity-10 hover:after:content-['${
                                           PlayerMark[
                                               player as keyof typeof PlayerMark
                                           ]
                                       }']`
-                                    : ''
-
+                                : ''
+                            const hoverType = isValidCell
+                                ? 'hover:cursor-pointer'
+                                : 'hover:cursor-default'
                             return (
                                 <div
-                                    className={`boardcell w-9 h-9 text-2xl lg:w-25 lg:h-25 lg:text-8xl sm:w-20 sm:h-20 sm:text-7xl bg-white dark:bg-black dark:text-white border-2 font-semibold text-center content-center text-black hover:bg-neutral-200 dark:hover:bg-neutral-500 hover:cursor-pointer ${afterContentStyle} rounded shadow"`}
+                                    className={`boardcell w-9 h-9 text-2xl lg:w-25 lg:h-25 lg:text-8xl sm:w-20 sm:h-20 sm:text-7xl bg-white dark:bg-black dark:text-white border-2 font-semibold text-center content-center text-black ${hoverType} ${afterContentStyle} rounded shadow"`}
                                     onClick={clicker}
                                 >
                                     {
@@ -154,6 +170,13 @@ export default function Board() {
                             className={`cursor-default text-5xl dark:text-white lg:text-9xl md:text-8xl sm:text-6xl relative after:bg-black dark:after:bg-white after:absolute after:h-1 after:w-0 after:bottom-0 after:left-0 after:transition-all after:duration-300 ${player === Player.O ? 'after:w-full' : 'after:w-0'}`}
                         >
                             O
+                            {thinking ? (
+                                <div className="absolute top-0 right-5 sm:right-10">
+                                    <Thinking />
+                                </div>
+                            ) : (
+                                ''
+                            )}
                         </div>
                     </div>
                 </div>

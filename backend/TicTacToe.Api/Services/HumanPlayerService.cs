@@ -11,12 +11,12 @@ namespace TicTacToe.Api.Services
 
     public interface IPlayerService
     {
-        bool MakeMove(Player player, Position position, IBoardService board);
+        bool MakeMove(Player player, ref Position position, IBoardService board);
     }
 
     public class HumanPlayerService : IPlayerService
     {
-        public bool MakeMove(Player player, Position position, IBoardService board)
+        public bool MakeMove(Player player, ref Position position, IBoardService board)
         {
             board.SetPosition(player, position);
             return true;

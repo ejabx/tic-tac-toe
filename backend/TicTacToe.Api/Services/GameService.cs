@@ -14,12 +14,12 @@ namespace TicTacToe.Api.Services
     public class GameService : IGameService
     {
         private readonly IBoardService _boardService;
-        private readonly IPlayerService _playerService;
+        private readonly (IPlayerService, IPlayerService) _playerServices;
 
-        public GameService(IBoardService boardService, IPlayerService playerService)
+        public GameService(IBoardService boardService)
         {
             _boardService = boardService;
-            _playerService = playerService;
+            _playerServices = (new HumanPlayerService(), new ComputerPlayerService());
         }
 
         public Player[] GetBoard()
@@ -34,7 +34,11 @@ namespace TicTacToe.Api.Services
 
         public MatchResult MakeMove(Player player, Position position)
         {
-            _playerService.MakeMove(player, position, _boardService);
+            if (player == Player.PLAYER_X)
+                _playerServices.Item1.MakeMove(player, ref position, _boardService);
+            else
+                _playerServices.Item2.MakeMove(player, ref position, _boardService);
+
             return _boardService.EvalWinner(player, position);
         }
     }
